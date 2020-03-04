@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Main {
 	
-	public static int gridSize = 7;
+	public static int gridSize = 5;
 			
 	public static void main(String[]args) {
 		
