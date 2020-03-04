@@ -32,6 +32,7 @@ public class LightsOut {
 		public int g; //cost so far
 		
 		public Node(boolean[][] grid, Integer[] action, HashSet<Integer[]> previouslyPressed, int costSoFar) {
+			this.grid=grid;
 			this.pressed = new HashSet<Integer[]>();
 			this.pressed.addAll(previouslyPressed); //need not be deep copy, not going to edit anything already in it
 			
