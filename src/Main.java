@@ -8,7 +8,7 @@ public class Main {
 	
 	public static int gridSize = 5;
 			
-	public static void main(String[]args) throws FileNotFoundException {
+	public static void runTests() throws FileNotFoundException {
 		
 		//create a grid to run through the algorithm
 		boolean[][] startGrid;// = new boolean[gridSize][gridSize];
