@@ -14,31 +14,66 @@
  * 
  */
 
-import java.util.Queue;
 import java.util.PriorityQueue;
 import java.util.HashSet;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class LightsOut {
 	
+	static class Action{
+		private Integer[] action; // underlying action
+		
+		public Action(Integer[] action) {
+			this.action = new Integer[] {action[0], action[1]};
+		}
+		
+		/**
+		 * Gets the underlying action array
+		 * @return The 2-element action array
+		 */
+		public Integer[] getAction() {
+			return this.action;
+		}
+		
+		/**
+		 * Hashcode Override
+		 */
+		@Override
+		public int hashCode() {
+			return 7 + 23 * this.action[0].hashCode() + 31 * this.action[1].hashCode();
+		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if(!(other instanceof Action)) return false;
+			Action a = (Action) other;
+			return a.action[0] == this.action[0] && a.action[1] == this.action[1]; 
+		}
+		
+		@Override
+		public String toString() {
+			return String.format("[%d,%d]", action[0], action[1]);
+		}
+	}
+	
+	
+	
 	static class Node implements Comparable{
 		private boolean[][] grid; //the current grid state
-		private HashSet<Integer[]> pressed; //the previously pressed lights
+		private HashSet<Action> pressed; //the previously pressed lights
 		public boolean isSolution; //is this a solution state
 		private int costSoFar; //the cost so far
 		public int h; //heuristic
 		public int f; //combined cost
 		public int g; //cost so far
 		
-		public Node(boolean[][] grid, Integer[] action, HashSet<Integer[]> previouslyPressed, int costSoFar) {
+		public Node(boolean[][] grid, Action action, HashSet<Action> previouslyPressed, int costSoFar) {
 			this.grid=grid;
-			this.pressed = new HashSet<Integer[]>();
+			this.pressed = new HashSet<Action>();
 			this.pressed.addAll(previouslyPressed); //need not be deep copy, not going to edit anything already in it
 			
 			//if we have an action, calculate all fields
 			if(action != null) {
-				if(action.length != 2) throw new IllegalArgumentException("Action must be pressed element");
 				//add this state's action
 				this.pressed.add(action);
 				//press the button
@@ -48,7 +83,7 @@ public class LightsOut {
 				//unpress it
 				this.pressButton(action, grid);
 			} else {
-				isSolution = false;
+				isSolution = isSolutionState();
 			}
 			
 			this.costSoFar = costSoFar;
@@ -62,10 +97,11 @@ public class LightsOut {
 		 * @param action The action to take on the board
 		 * @param inputGrid the grid to manipulate, manipulates in-place
 		 */
-		private void pressButton(Integer[] action, boolean[][] inputGrid) {
+		private void pressButton(Action action, boolean[][] inputGrid) {
+			Integer[] uAction = action.getAction();
 			//For each surrounding cell, if in range, toggle it
-			for(int i = action[0] -1; i <= action[0]+1; i++) {
-				for(int j = action[1] -1; j <= action[1]+1; j++) {
+			for(int i = uAction[0] -1; i <= uAction[0]+1; i++) {
+				for(int j = uAction[1] -1; j <= uAction[1]+1; j++) {
 					if( (i >= 0 && i < inputGrid.length) && (j >= 0 && j < inputGrid.length)) {
 						inputGrid[i][j] = !inputGrid[i][j];
 					}
@@ -108,13 +144,14 @@ public class LightsOut {
 		 * @param action The action taken
 		 * @return the cost of the action taken
 		 */
-		private int c(Integer[] action) {
+		private int c(Action action) {
 			if(action == null) return 0;
 			boolean lr = false; //is on sides
 			boolean tb = false; //is top/bottom
+			Integer[] uAction = action.getAction();
 			//check edge cases, else in center
-			lr = action[0] == 0 || action[0] == grid.length -1;
-			tb = action[1] == 0 || action[1] == grid.length -1;
+			lr = uAction[0] == 0 || uAction[0] == grid.length -1;
+			tb = uAction[1] == 0 || uAction[1] == grid.length -1;
 			
 			if(lr && tb) return 4;
 			else if (lr || tb) return 6;
@@ -126,7 +163,7 @@ public class LightsOut {
 		 * @param action Action to be taken
 		 * @return the g value of the given node
 		 */
-		private int g(Integer[] action) {
+		private int g(Action action) {
 			return costSoFar + c(action);
 		}
 		
@@ -135,49 +172,14 @@ public class LightsOut {
 		 */
 		public String toString() {
 			String ret = "Buttons to Press: ";
-			for(Integer[] button : pressed) {
-				ret += String.format("[%d,%d]", button[0], button[1]);
+			for(Action button : pressed) {
+				ret += button;
 			}
 			//stats
 			ret += String.format("\tg = %d\th = %d\tf = %d", g, h, f);
 			
 			return ret;
 		}
-		
-/*		*//**
-		 * Generates the next possible states for this node
-		 * @return An ArrayList of nodes that could come from this state
-		 *//*
-		public ArrayList<Node> generateNextStates(){
-			ArrayList<Node> toAdd = new ArrayList<Node>();
-			//if on chair, get down
-			if(onChair) {
-				toAdd.add(new Node(size, monkeyRoom, chairRoom, g, Action.Climb, false, useHeuristic));
-			}
-			else { //not on chair
-				//can we get on the chair?
-				if(monkeyRoom == chairRoom) {
-					toAdd.add(new Node(size, monkeyRoom, chairRoom, g, Action.Climb, true, useHeuristic));
-				}
-				//check to see if we can move left or right
-				if(monkeyRoom > 0) { //left
-					toAdd.add(new Node(size, monkeyRoom-1, chairRoom, g, Action.Move, false, useHeuristic));
-					//if with chair, move, too
-					if(monkeyRoom == chairRoom) {
-						toAdd.add(new Node(size, monkeyRoom-1, chairRoom-1, g, Action.Push, false, useHeuristic));
-					}
-				}
-				if(monkeyRoom < size-1) { //right
-					toAdd.add(new Node(size, monkeyRoom+1, chairRoom, g, Action.Move, false, useHeuristic));
-					//if with chair, move, too
-					if(monkeyRoom == chairRoom) {
-						toAdd.add(new Node(size, monkeyRoom+1, chairRoom+1, g, Action.Push, false, useHeuristic));
-					}
-				}
-				
-			}
-			return toAdd;
-		}*/
 		
 		/**
 		 * Runs the pressed buttons on the input grid
@@ -193,11 +195,20 @@ public class LightsOut {
 			}
 			
 			//press all buttons
-			for(Integer[] button : pressed) {
+			for(Action button : pressed) {
 				this.pressButton(button, localGrid);
 			}
 			
 			return localGrid;
+		}
+		
+		/**
+		 * Determines if the action is already in the set
+		 * @param action The action to check in the set
+		 * @return whether the action is in the set or not
+		 */
+		public boolean hasActionInSet(Action action) {
+			return pressed.contains(action);
 		}
 		
 		/**
@@ -231,10 +242,10 @@ public class LightsOut {
 	 * A solution is a matrix in which all entries are off
 	 * @param start The 2D start matrix for the problem
 	 */
-	public static void solveGrid(boolean[][] start){
+	public static Node solveGrid(boolean[][] start){
 		//initialize fronteir
 		PriorityQueue<Node> frontier = new PriorityQueue<Node>(); //by default, front of queue is minimum
-		frontier.add(new Node(start, null, new HashSet<Integer[]>(), 0));
+		frontier.add(new Node(start, null, new HashSet<Action>(), 0));
 		//initialize explored set
 		HashSet<Node> explored = new HashSet<Node>();
 		//is found
@@ -265,8 +276,8 @@ public class LightsOut {
 			for(int i = 0; i < start.length; i++) {
 				for(int j = 0; j < start.length; j++) {
 					//if not pressed by parent, add new child
-					Integer[] action = new Integer[] {i,j};
-					if(!leaf.pressed.contains(action)) {
+					Action action = new Action(new Integer[] {i,j});
+					if(!leaf.hasActionInSet(action)) {
 						Node child = new Node(parentGrid, action, leaf.pressed, leaf.g);
 						
 						//now add globally iff not explored, by definition won't be better/worse
@@ -285,7 +296,13 @@ public class LightsOut {
 		
 		
 		//Print end salute, found or not
-		if(!found) System.out.println("No path was found.");
-		else System.out.println("A path was found.");
+		if(!found) { 
+			System.out.println("No path was found.");
+			return null;
+		}
+		else { 
+			System.out.println("A path was found.");
+			return goal;
+		}
 	}
 }
