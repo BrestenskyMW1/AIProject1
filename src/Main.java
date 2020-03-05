@@ -6,16 +6,10 @@ import java.util.Scanner;
 
 public class Main {
 	
-	public static int gridSize = 5;
+	
 			
-	public static void runTests() throws FileNotFoundException {
-		
-		//create a grid to run through the algorithm
-		boolean[][] startGrid;// = new boolean[gridSize][gridSize];
-		
-		startGrid = readGridFromFile("data.txt");
-		
-		
+	public static void runTests(int gridSize, boolean[][] startGrid) {
+				
 		//print grid
 		String str = "";
 		for(int i = 0; i < startGrid.length; i++) {
@@ -41,7 +35,7 @@ public class Main {
 		System.out.println(goal);
 	}
 	
-	public static boolean[][] makeRandomGrid(){
+	public static boolean[][] makeRandomGrid(int gridSize){
 		boolean[][] startGrid = new boolean[gridSize][gridSize];
 		Random rnd = new Random();
 		
