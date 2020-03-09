@@ -20,14 +20,16 @@ public class Main {
 		
 		//start timer
 		long startTime = System.currentTimeMillis();
+		//System.out.println(startTime + " : Start");
 		
 		//run algorithm
 		LightsOut.Node goal = LightsOut.solveGrid(startGrid);
 		
 		//stop timer
 		long endTime = System.currentTimeMillis();
-		long runtime = endTime - startTime;
+		//System.out.println(endTime + " : End");
 		
+		long runtime = endTime - startTime;
 		//print timer results
 		System.out.println(runtime + " milliseconds");
 		long seconds = runtime/1000;
