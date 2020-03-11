@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 public class UIProject1 extends Application{
 	public static int gridSize = 5;
 	public static CheckBox[][] cboxArray;
+	public static TextField calcPopup;
 	
 	@Override
 	public void start(Stage primaryStage) throws FileNotFoundException, Exception  {
@@ -39,11 +41,21 @@ public class UIProject1 extends Application{
 		
 		//create and wire the run button
 		Button btn = new Button("Start Algorithm");
-	    btn.setOnAction((e) -> Main.runTests(gridSize, testGrid));
+	    btn.setOnAction((e) -> {
+			try {
+				Main.runTests(gridSize, testGrid);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		});
 		//btn.setOnAction((e) -> updateCheckBoxes(invertedTest));
 	    GridPane.setRowIndex(btn,gridSize/2);
         GridPane.setColumnIndex(btn,gridSize+1); 
 	    root.getChildren().add(btn);
+	    
+	    calcPopup = new TextField("Calculating...");
+	    calcPopup.setVisible(false);
+	    root.getChildren().add(calcPopup);
 	    
 	    //set the scene and run the app
 	    primaryStage.setTitle("Lights Out!");
@@ -55,8 +67,12 @@ public class UIProject1 extends Application{
 	    launch(args);
 	}
 	
+	public static void showText(Boolean bool) {
+		calcPopup.setVisible(bool);
+	}
+	
 	//Call this to (hopefully) update the application window with new vals
-	public static void updateCheckBoxes(boolean[][] newArray) {
+	public static void updateCheckBoxes(boolean[][] newArray) throws InterruptedException {
 		for(int i = 0; i < gridSize; i++) {
 			for(int j = 0; j < gridSize; j++) {
 				cboxArray[i][j].setSelected(newArray[i][j]);
@@ -65,5 +81,7 @@ public class UIProject1 extends Application{
 
 			}
 		}
+		//wait two seconds
+		Thread.sleep(2000);
 	}
 }

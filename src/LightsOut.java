@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 public class LightsOut {
 	
-	static class Action{
+	public static class Action{
 		private Integer[] action; // underlying action
 		
 		public Action(Integer[] action) {
@@ -60,7 +60,7 @@ public class LightsOut {
 	
 	static class Node implements Comparable{
 		private boolean[][] grid; //the current grid state
-		private HashSet<Action> pressed; //the previously pressed lights
+		HashSet<Action> pressed; //the previously pressed lights
 		public boolean isSolution; //is this a solution state
 		private int costSoFar; //the cost so far
 		public int h; //heuristic
