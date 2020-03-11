@@ -18,7 +18,8 @@ public class Main {
 		
 		System.out.println(str);
 		
-		UIProject1.showText(true);
+		//UIProject1.showText(true);
+		
 		//start timer
 		long startTime = System.currentTimeMillis();
 		//System.out.println(startTime + " : Start");
@@ -36,21 +37,7 @@ public class Main {
 		long seconds = runtime/1000;
 		System.out.println(seconds + " seconds");
 		
-		UIProject1.showText(false);
-		//loop over buttons pressed and change the check boxes
-		for(LightsOut.Action button : goal.pressed) {
-			//for each action, print out a board and wait
-			Integer[] uAction = button.getAction();
-			//For each surrounding cell, if in range, toggle it
-			for(int i = uAction[0] -1; i <= uAction[0]+1; i++) {
-				for(int j = uAction[1] -1; j <= uAction[1]+1; j++) {
-					if( (i >= 0 && i < startGrid.length) && (j >= 0 && j < startGrid.length)) {
-						startGrid[i][j] = !startGrid[i][j];
-					}
-				}	
-			}
-			UIProject1.updateCheckBoxes(startGrid);
-		}
+		//UIProject1.showText(false);
 		System.out.println(goal);
 	}
 	

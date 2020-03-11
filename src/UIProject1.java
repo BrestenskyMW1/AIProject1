@@ -43,7 +43,24 @@ public class UIProject1 extends Application{
 		Button btn = new Button("Start Algorithm");
 	    btn.setOnAction((e) -> {
 			try {
-				Main.runTests(gridSize, testGrid);
+				showText(true);
+				LightsOut.Node goal = Main.runTests(gridSize, testGrid);
+				for(LightsOut.Action button : goal.pressed) {
+					//for each action, print out a board and wait
+					Integer[] uAction = button.getAction();
+					//For each surrounding cell, if in range, toggle it
+					for(int i = uAction[0] -1; i <= uAction[0]+1; i++) {
+						for(int j = uAction[1] -1; j <= uAction[1]+1; j++) {
+							if( (i >= 0 && i < testGrid.length) && (j >= 0 && j < testGrid.length)) {
+								testGrid[i][j] = !testGrid[i][j];
+							}
+						}	
+					}
+					UIProject1.updateCheckBoxes(testGrid);
+					//wait two seconds
+					Thread.sleep(2000);
+				}
+				showText(false);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -56,7 +73,8 @@ public class UIProject1 extends Application{
 	    calcPopup = new TextField("Calculating...");
 	    calcPopup.setVisible(false);
 	    GridPane.setRowIndex(calcPopup, (gridSize/2) + 1);
-        GridPane.setColumnIndex(calcPopup, gridSize+1); 
+        GridPane.setColumnIndex(calcPopup, gridSize+2); 
+        
 	    root.getChildren().add(calcPopup);
 	    
 	    //set the scene and run the app
