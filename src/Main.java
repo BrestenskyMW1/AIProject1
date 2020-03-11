@@ -8,7 +8,7 @@ public class Main {
 	
 	
 			
-	public static void runTests(int gridSize, boolean[][] startGrid) throws InterruptedException {
+	public static LightsOut.Node runTests(int gridSize, boolean[][] startGrid) throws InterruptedException {
 				
 		//print grid
 		String str = "";
@@ -39,6 +39,7 @@ public class Main {
 		
 		//UIProject1.showText(false);
 		System.out.println(goal);
+		return goal;
 	}
 	
 	public static boolean[][] makeRandomGrid(int gridSize){
