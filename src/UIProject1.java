@@ -55,6 +55,8 @@ public class UIProject1 extends Application{
 	    
 	    calcPopup = new TextField("Calculating...");
 	    calcPopup.setVisible(false);
+	    GridPane.setRowIndex(calcPopup, (gridSize/2) + 1);
+        GridPane.setColumnIndex(calcPopup, gridSize+1); 
 	    root.getChildren().add(calcPopup);
 	    
 	    //set the scene and run the app
